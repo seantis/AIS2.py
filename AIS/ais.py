@@ -32,6 +32,7 @@ class AIS:
     """Client object holding connection information to the AIS service."""
 
     last_request_id: Optional[str]
+    """Contains the id of the last request made to the AIS API."""
 
     def __init__(
         self,
@@ -55,9 +56,6 @@ class AIS:
     def post(self, payload: str) -> Dict[str, Any]:
         """ Do the post request for this payload and return the signature part
         of the json response.
-
-        :type payload: str
-        :rtype: dict
         """
 
         headers = {
@@ -74,17 +72,11 @@ class AIS:
         return sign_resp
 
     def sign_batch(self, pdfs: Sequence['PDF']) -> None:
-        """Sign a batch of files.
-
-        :type pdfs: list(PDF)
-        """
+        """Sign a batch of files."""
 
         # Let's not be pedantic and allow a batch of size 1
         if len(pdfs) == 1:
             return self.sign_one_pdf(pdfs[0])
-
-        for pdf in pdfs:
-            pdf.prepare()
 
         payload_documents = {
             "DocumentHash": {
@@ -128,11 +120,7 @@ class AIS:
             pdfs[which_document].write_signature(signature)
 
     def sign_one_pdf(self, pdf: 'PDF') -> None:
-        """Sign the given pdf file.
-
-        :type pdf: PDF
-        """
-        pdf.prepare()
+        """Sign the given pdf file."""
 
         payload = {
             "SignRequest": {

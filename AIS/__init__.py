@@ -11,6 +11,7 @@ from .pdf import PDF
 from .exceptions import (
     AISError,
     AuthenticationFailed,
+    SignatureTooLarge,
     UnknownAISError,
 )
 
@@ -19,6 +20,7 @@ __all__ = (
     'PDF',
     'AISError',
     'AuthenticationFailed',
+    'SignatureTooLarge',
     'UnknownAISError'
 )
 

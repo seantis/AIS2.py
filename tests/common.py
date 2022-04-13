@@ -10,6 +10,9 @@ import json
 from os.path import dirname, join
 import unittest
 
+from pyhanko.pdf_utils.reader import PdfFileReader
+from pyhanko.sign.validation import validate_pdf_signature
+
 from vcr import VCR
 from vcr.serializers import jsonserializer
 
@@ -78,6 +81,14 @@ my_vcr.register_serializer('json', JSONSerializer)
 def fixture_path(filename):
     """Build the full path of a fixture file."""
     return join(dirname(__file__), 'fixtures', filename)
+
+
+def validate_signature(pdf):
+    """Validate the pdf's signature"""
+    # TODO: Add a ValidationContext to validate chain-of-trust?
+    reader = PdfFileReader(pdf.out_stream)
+    signature = reader.embedded_signatures[0]
+    return validate_pdf_signature(signature)
 
 
 class BaseCase(unittest.TestCase):

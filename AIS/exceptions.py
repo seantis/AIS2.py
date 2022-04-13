@@ -28,6 +28,18 @@ class AuthenticationFailed(AISError):
     pass
 
 
+class SignatureTooLarge(AISError):
+    """The signature received from AIS is too large to store.
+
+    This means the PDF needs to be created with a larger value
+    for sig_size to store the signature.
+    """
+
+    def __init__(self, signature_size: int):
+        self.signature_size = signature_size
+        super().__init__(f'{signature_size} bytes')
+
+
 class UnknownAISError(AISError):
     """Unknown AIS Error."""
 
