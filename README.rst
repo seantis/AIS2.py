@@ -17,6 +17,10 @@ AIS2.py
     :target: https://codecov.io/gh/seantis/AIS2.py
     :alt: Codecov.io
 
+.. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
+   :target: https://github.com/pre-commit/pre-commit
+   :alt: pre-commit
+
 AIS.py: a Python interface for the Swisscom All-in Signing Service (aka AIS).
 
 AIS2.py is a fork created to get rid of the licensing woes affected itext dependency and replace it with pyHanko. Furthermore the API was slightly adjusted to be more flexible, so buffers can be passed around rather than files that need to exist on the filesystem.
@@ -31,7 +35,7 @@ AIS2.py works like this:
     ...     pdf = PDF(fp)
     ...     with open('target.pdf', 'wb') as fp:
     ...         fp.write(pdf.out_stream.getbuffer())
-    ... 
+    ...
 
 License
 -------
