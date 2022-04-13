@@ -17,10 +17,27 @@ from pyhanko.sign import signers
 from pyhanko.sign.signers import cms_embedder
 
 
-class PDF(object):
+from typing import Union
+
+
+class PDF:
     """A container for a PDF file to be signed and the signed version."""
 
-    def __init__(self, input_file):
+    in_stream: io.BytesIO
+    """Input stream for the PDF to be signed"""
+
+    out_stream: io.BytesIO
+    """Output stream for the signed PDF, only exists after digest"""
+
+    sig_ob: signers.SignatureObject
+    """Signature object used by pyHanko"""
+
+    # FIXME: This should accept all file likes and dump them into
+    #        a new BytesIO buffer. There should be a raw input option
+    #        that can skip the copy for buffers that don't care about
+    #        getting modified. (The input buffer will be modified by
+    #        pyHanko)
+    def __init__(self, input_file: Union[str, io.BytesIO]):
         """Accepts either a filename or file-like object"""
 
         if isinstance(input_file, str):
@@ -29,6 +46,7 @@ class PDF(object):
         else:
             self.in_stream = input_file
 
+        # FIXME: in_stream.seek(0)?
         writer = IncrementalPdfFileWriter(self.in_stream)
         self.cms_writer = cms_embedder.PdfCMSEmbedder().write_cms(
             field_name='Signature',
@@ -37,20 +55,14 @@ class PDF(object):
         """CMS Writer used for embedding the signature"""
         next(self.cms_writer)
 
-        self.out_stream = None
-        """Output stream for the signed PDF, is only valid after digest"""
-
-        self.sig_obj = None
-        """Signature object used by pyHanko"""
-
-    def prepare(self):
+    def prepare(self) -> None:
         """Add an empty signature to self.out_filename."""
         self.sig_obj = signers.SignatureObject(
             timestamp=datetime.now(),
             bytes_reserved=64*1024,  # 64KiB
         )
 
-    def digest(self):
+    def digest(self) -> str:
         self.cms_writer.send(
             cms_embedder.SigObjSetup(
                 sig_placeholder=self.sig_obj,
@@ -69,9 +81,9 @@ class PDF(object):
 
         return result.decode('ascii')
 
-    def write_signature(self, signature):
+    def write_signature(self, signature: bytes) -> None:
         """ Write the signature in the pdf file
 
         :type signature: Signature
         """
-        self.cms_writer.send(signature.contents)
+        self.cms_writer.send(signature)

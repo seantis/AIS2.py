@@ -6,7 +6,7 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 :license: AGPLv3, see README and LICENSE for more details
 
 """
-from .ais import AIS, Signature
+from .ais import AIS
 from .pdf import PDF
 from .exceptions import (
     AISError,
@@ -14,7 +14,12 @@ from .exceptions import (
     UnknownAISError,
 )
 
-__all__ = ('AIS', 'Signature', 'PDF', 'AISError',
-           'AuthenticationFailed', 'UnknownAISError')
+__all__ = (
+    'AIS',
+    'PDF',
+    'AISError',
+    'AuthenticationFailed',
+    'UnknownAISError'
+)
 
 __version__ = '2.0.0'

@@ -7,6 +7,10 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from requests import Response
+
 
 class AISError(Exception):
     """Generic AIS Error."""
@@ -36,7 +40,7 @@ minor_to_exception = {
 }
 
 
-def error_for(response):
+def error_for(response: 'Response') -> Exception:
     """Return the correct error for a response."""
     result = response.json()['SignResponse']['Result']
 

@@ -9,34 +9,50 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 
 import base64
 import json
-import re
 import uuid
 
 import requests
 
 from . import exceptions
 
+
+from typing import Any
+from typing import Dict
+from typing import Optional
+from typing import Sequence
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .pdf import PDF
+
+
 url = "https://ais.swisscom.com/AIS-Server/rs/v1.0/sign"
 
 
-class AIS(object):
+class AIS:
     """Client object holding connection information to the AIS service."""
 
-    def __init__(self, customer, key_static, cert_file, cert_key):
+    last_request_id: Optional[str]
+
+    def __init__(
+        self,
+        customer: str,
+        key_static: str,
+        cert_file: str,
+        cert_key: str
+    ):
         """Initialize an AIS client with authentication information."""
         self.customer = customer
         self.key_static = key_static
         self.cert_file = cert_file
         self.cert_key = cert_key
 
-        self.byte_range = None
         self.last_request_id = None
 
-    def _request_id(self):
-        request_id = self.last_request_id = uuid.uuid4().hex
-        return request_id
+    def _request_id(self) -> str:
+        self.last_request_id = uuid.uuid4().hex
+        return self.last_request_id
 
-    def post(self, payload):
+    def post(self, payload: str) -> Dict[str, Any]:
         """ Do the post request for this payload and return the signature part
         of the json response.
 
@@ -57,26 +73,29 @@ class AIS(object):
             raise exceptions.error_for(response)
         return sign_resp
 
-    def sign_batch(self, pdfs):
+    def sign_batch(self, pdfs: Sequence['PDF']) -> None:
         """Sign a batch of files.
 
         :type pdfs: list(PDF)
         """
-        # payload in batch
+
+        # Let's not be pedantic and allow a batch of size 1
+        if len(pdfs) == 1:
+            return self.sign_one_pdf(pdfs[0])
 
         for pdf in pdfs:
             pdf.prepare()
 
         payload_documents = {
-            "DocumentHash" + str(count): {
-                "@ID": count,
+            "DocumentHash": {
+                "@ID": index,
                 "dsig.DigestMethod": {
                     "@Algorithm":
                     "http://www.w3.org/2001/04/xmlenc#sha256"
                 },
                 "dsig.DigestValue": pdf.digest()
             }
-            for count, pdf in enumerate(pdfs)
+            for index, pdf in enumerate(pdfs)
         }
 
         payload = {
@@ -98,20 +117,17 @@ class AIS(object):
         }
 
         payload_json = json.dumps(payload, indent=4)
-        payload_json = re.sub(r'"DocumentHash\d+"', '"DocumentHash"',
-                              payload_json)
         sign_resp = self.post(payload_json)
 
         other = sign_resp['SignatureObject']['Other']['sc.SignatureObjects']
         for signature_object in other['sc.ExtendedSignatureObject']:
-            signature = Signature(base64.b64decode(
+            signature = base64.b64decode(
                 signature_object['Base64Signature']['$']
-            ))
+            )
             which_document = int(signature_object['@WhichDocument'])
-            pdf = pdfs[which_document]
-            pdf.write_signature(signature)
+            pdfs[which_document].write_signature(signature)
 
-    def sign_one_pdf(self, pdf):
+    def sign_one_pdf(self, pdf: 'PDF') -> None:
         """Sign the given pdf file.
 
         :type pdf: PDF
@@ -143,15 +159,7 @@ class AIS(object):
         }
 
         sign_response = self.post(json.dumps(payload))
-        signature = Signature(base64.b64decode(
+        signature = base64.b64decode(
             sign_response['SignatureObject']['Base64Signature']['$']
-        ))
+        )
         pdf.write_signature(signature)
-
-
-class Signature(object):
-    """A cryptographic signature returned from the AIS webservice."""
-
-    def __init__(self, contents):
-        """Build a Signature."""
-        self.contents = contents
