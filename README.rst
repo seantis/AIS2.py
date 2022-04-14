@@ -34,7 +34,7 @@ AIS2.py works like this:
     >>> pdf = PDF('source.pdf')
     >>> ais.sign_one_pdf(pdf)
     >>> with open('target.pdf', 'wb') as fp:
-    ...     fp.write(pdf.out_stream.getbuffer())
+    ...     fp.write(pdf.out_stream.getvalue())
     ...
 
 License

@@ -1,0 +1,2 @@
+fixes:
+  - ".tox/py*/lib/python*/site-packages/::"

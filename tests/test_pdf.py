@@ -27,6 +27,10 @@ class NonSeekableIO(WeirdIO):
 
 class TestPDF(BaseCase):
 
+    def test_value_error_on_init(self):
+        with self.assertRaises(ValueError):
+            PDF(None)
+
     def test_digest(self):
         pdf = PDF(fixture_path('one.pdf'))
         self.assertEqual(44, len(pdf.digest()))   # digest changes every time

@@ -156,7 +156,7 @@ class PDF:
 
     def write_signature(self, signature: bytes) -> None:
         """ Write the signature into the pdf file"""
-        signature_size = len(signature)*2  # acount for hex encoding
+        signature_size = len(signature)*2  # account for hex encoding
         if signature_size > self.sig_size:
             raise SignatureTooLarge(signature_size)
 
