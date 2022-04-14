@@ -31,10 +31,9 @@ AIS2.py works like this:
 
     >>> from AIS import AIS, PDF
     >>> client = AIS('alice', 'a_secret', 'a.crt', 'a.key')
-    >>> with open('source.pdf', 'rb') as fp:
-    ...     pdf = PDF(fp)
-    ...     with open('target.pdf', 'wb') as fp:
-    ...         fp.write(pdf.out_stream.getbuffer())
+    >>> pdf = PDF('source.pdf')
+    >>> with open('target.pdf', 'wb') as fp:
+    ...     fp.write(pdf.out_stream.getbuffer())
     ...
 
 License
