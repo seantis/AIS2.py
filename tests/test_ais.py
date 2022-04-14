@@ -32,6 +32,17 @@ class TestAIS(BaseCase):
 
         # TODO check the signature
 
+    def test_sign_single_unprepared_pdf_as_batch(self):
+        self.assertIsNone(self.instance.last_request_id)
+
+        pdf = PDF(fixture_path('one.pdf'))
+        with my_vcr.use_cassette('sign_unprepared_pdf'):
+            self.instance.sign_batch([pdf])
+
+        self.assertIsNotNone(self.instance.last_request_id)
+
+        # TODO check the signature
+
     def test_sign_batch(self):
         self.assertIsNone(self.instance.last_request_id)
 
