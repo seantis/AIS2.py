@@ -3,21 +3,24 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-AIS.py
+AIS2.py
 ======
 
 AIS.py: a Python interface for the Swisscom All-in Signing Service (aka AIS).
 
+AIS2.py is a fork created to get rid of the licensing woes affected itext dependency and replace it with pyHanko. Furthermore the API was slightly adjusted to be more flexible, so buffers can be passed around rather than files that need to exist on the filesystem.
+
 Release v\ |version|.
 
-AIS.py works like this::
+AIS2.py works like this::
 
     >>> from AIS import AIS, PDF
-    >>> client = AIS.AIS('alice', 'a_secret', 'a.crt', 'a.key')
+    >>> client = AIS('alice', 'a_secret', 'a.crt', 'a.key')
     >>> pdf = PDF('source.pdf')
-    >>> client.sign_one_pdf(pdf)
-    >>> print(pdf.out_filename)
-    /tmp/.../T/tmpexkdrlkm.pdf
+    >>> ais.sign_one_pdf(pdf)
+    >>> with open('target.pdf', 'wb') as fp:
+    ...     fp.write(pdf.out_stream.getvalue())
+    ...
 
 AIS is a webservice for electronic signatures offered by Swisscom. You can
 check out the `corporate page`_ and the `reference guide`_ of the
@@ -47,22 +50,21 @@ Thus, the procedure is the following:
 3. The digest is sent to the AIS webservice.
 4. The detached signature is included in the placeholder.
 
-``AIS.py`` takes care of all this, delegating point 1 to `iText`_.
+``AIS.py`` takes care of all this, delegating everything put step 3 to `pyHanko`_.
 
 .. _corporate page:  https://www.swisscom.ch/en/business/enterprise/offer/security/identity-access-security/signing-service.html
 .. _reference guide: http://documents.swisscom.com/product/1000255-Digital_Signing_Service/Documents/Reference_Guide/Reference_Guide-All-in-Signing-Service-en.pdf
-.. _iText: itextpdf.com
+.. _pyHanko: https://github.com/MatthiasValvekens/pyHanko
 
 Installation
 ------------
 
-Make sure you have Python 2.7, 3.4, 3.5 or a recent Pypy and Java 7 or later,
+Make sure you have Python 3.7, 3.8, 3.9, 3.11 or a recent Pypy
 then::
 
-    $ pip install AIS.py
+    $ pip install AIS2.py
 
-This will pull Python dependencies, and the Java library is vendored in, so you
-don't need to install anything other than Python and Java.
+This will pull Python dependencies, you don't need to install anything other than Python.
 
 Tests
 -----
@@ -72,7 +74,7 @@ real webservice, and HTTP requests/responses are recorded with the `vcrpy`_
 library as cassettes. This means that you can run all the tests on your machine
 without real credentials to AIS. The sensible part of the request (i.e. the
 login and password) is hidden automatically from the cassette file. This also
-allows the tests to run on Travis CI.
+allows the tests to run on GitHub Actions.
 
 To run the tests locally, enter the directory you cloned and::
 
@@ -94,16 +96,12 @@ If you prefer to do this manually for one Python version::
 Status
 ------
 
-AIS.py is already functional for its main use case, but a few things could be
+AIS2.py is already functional for its main use case, but a few things could be
 improved:
 
 - Allow to request only a trusted timestamp instead of a signature.
 - Allow to choose a different digest algorithm than SHA256.
 - Handle second factor authentication in addition to static certificates.
-- Implement in Python the generation of an empty signature instead of calling
-  iText through a Java wrapper. Later handling of PDF files is already in
-  Python thanks to the PyPDF2 library that gives a somewhat low level access.
-- Fix a few problems with vcrpy that prevent tests from running in Python 3.
 - Find a way to check PDF signatures programmatically in the tests.
 - Document all parameters and return values in the docstrings (i.e. improve
   the API reference).
