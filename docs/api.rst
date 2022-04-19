@@ -24,4 +24,4 @@ Exceptions
 .. autoexception:: AuthenticationFailed
 .. autoexception:: UnknownAISError
 .. autoexception:: AISError
-.. autoexception:: MissingPreparedSignature
+.. autoexception:: SignatureTooLarge

@@ -50,7 +50,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'AIS.py'
+project = 'AIS2.py'
 copyright = '2016, Camptocamp'
 author = 'Camptocamp'
 
@@ -207,7 +207,7 @@ html_show_sphinx = False
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'AISpydoc'
+htmlhelp_basename = 'AIS2pydoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -229,7 +229,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'AISpy.tex', 'AIS.py Documentation',
+    (master_doc, 'AIS2py.tex', 'AIS2.py Documentation',
      'Camptocamp', 'manual'),
 ]
 
@@ -259,7 +259,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'aispy', 'AIS.py Documentation',
+    (master_doc, 'ais2py', 'AIS2.py Documentation',
      [author], 1)
 ]
 
@@ -273,8 +273,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'AISpy', 'AIS.py Documentation',
-     author, 'AISpy', 'One line description of project.',
+    (master_doc, 'AIS2py', 'AIS2.py Documentation',
+     author, 'AIS2py', 'One line description of project.',
      'Miscellaneous'),
 ]
 
