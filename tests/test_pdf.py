@@ -8,6 +8,7 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 """
 from common import fixture_path, BaseCase
 from io import BytesIO
+from tempfile import TemporaryFile
 
 from AIS import PDF, SignatureTooLarge
 
@@ -47,14 +48,37 @@ class TestPDF(BaseCase):
         with self.assertRaises(SignatureTooLarge, msg='84 bytes'):
             pdf.write_signature(b'0'*42)
 
-    def test_write_signature_in_stream_in_place(self):
+    def test_write_signature_inout_stream(self):
         with open(fixture_path('one.pdf'), mode='rb') as fp:
             in_stream = BytesIO(fp.read())
 
-        pdf = PDF(in_stream=in_stream)
+        pdf = PDF(inout_stream=in_stream)
         pdf.digest()
         pdf.write_signature(b'0')
         assert pdf.out_stream is in_stream
+
+    def test_write_signature_out_stream(self):
+        with open(fixture_path('one.pdf'), mode='rb') as fp:
+            in_stream = BytesIO(fp.read())
+
+        out_stream = BytesIO()
+        pdf = PDF(in_stream, out_stream=out_stream)
+        pdf.digest()
+        pdf.write_signature(b'0')
+        assert pdf.out_stream is out_stream
+        assert in_stream.getvalue() != out_stream.getvalue()
+
+    def test_write_signature_out_stream_file(self):
+        with open(fixture_path('one.pdf'), mode='rb') as fp:
+            in_stream = BytesIO(fp.read())
+
+        with TemporaryFile() as out_stream:
+            pdf = PDF(in_stream=in_stream, out_stream=out_stream)
+            pdf.digest()
+            pdf.write_signature(b'0')
+            assert pdf.out_stream is out_stream
+            out_stream.seek(0)
+            assert in_stream.getvalue() != out_stream.read()
 
     def test_write_signature_read_only_input(self):
         with open(fixture_path('one.pdf'), mode='rb') as fp:
