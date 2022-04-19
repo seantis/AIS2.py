@@ -73,7 +73,7 @@ class TestPDF(BaseCase):
             in_stream = BytesIO(fp.read())
 
         with TemporaryFile() as out_stream:
-            pdf = PDF(in_stream=in_stream, out_stream=out_stream)
+            pdf = PDF(in_stream, out_stream=out_stream)
             pdf.digest()
             pdf.write_signature(b'0')
             assert pdf.out_stream is out_stream

@@ -169,7 +169,8 @@ class PDF:
                 )
             )
         )
-        digest, _ = self.cms_writer.send(self.sig_io_setup)
+        digest, out_stream = self.cms_writer.send(self.sig_io_setup)
+        assert out_stream is self.out_stream
 
         result = base64.b64encode(digest.document_digest)
 
