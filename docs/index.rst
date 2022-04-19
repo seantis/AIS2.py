@@ -50,7 +50,7 @@ Thus, the procedure is the following:
 3. The digest is sent to the AIS webservice.
 4. The detached signature is included in the placeholder.
 
-``AIS.py`` takes care of all this, delegating everything put step 3 to `pyHanko`_.
+``AIS.py`` takes care of all this, delegating everything except step 3 to `pyHanko`_.
 
 .. _corporate page:  https://www.swisscom.ch/en/business/enterprise/offer/security/identity-access-security/signing-service.html
 .. _reference guide: http://documents.swisscom.com/product/1000255-Digital_Signing_Service/Documents/Reference_Guide/Reference_Guide-All-in-Signing-Service-en.pdf
