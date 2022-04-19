@@ -1,4 +1,0 @@
-include README.rst
-include LICENSE
-include HISTORY.rst
-include py.typed
