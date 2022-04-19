@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0
+    rev: v4.2.0
     hooks:
       - id: trailing-whitespace
       - id: mixed-line-ending
@@ -20,7 +20,7 @@ repos:
       - id: nocheckin
         exclude: .pre-commit-config.yaml
   - repo: https://github.com/PyCQA/flake8
-    rev: 3.9.2
+    rev: 4.0.1
     hooks:
       - id: flake8
         files: '^(AIS/.*|tests/.*|setup)\.py$'
