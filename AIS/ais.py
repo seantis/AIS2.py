@@ -9,6 +9,7 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 
 import base64
 import json
+import re
 import uuid
 
 import requests
@@ -26,6 +27,7 @@ if TYPE_CHECKING:
 
 
 url = "https://ais.swisscom.com/AIS-Server/rs/v1.0/sign"
+_document_hash_fix = re.compile(r'"DocumentHash\d+"')
 
 
 class AIS:
@@ -109,6 +111,9 @@ class AIS:
         }
 
         payload_json = json.dumps(payload, indent=4)
+        # FIXME: This is really dumb... Is this actually the proper way to do
+        #        it? will it not accept an array in DocumentHash instead?!
+        payload_json = _document_hash_fix.sub('"DocumentHash"', payload_json)
         sign_resp = self.post(payload_json)
 
         other = sign_resp['SignatureObject']['Other']['sc.SignatureObjects']
