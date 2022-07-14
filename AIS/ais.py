@@ -18,7 +18,6 @@ from . import exceptions
 
 from typing import Any
 from typing import Dict
-from typing import Final
 from typing import Optional
 from typing import Sequence
 from typing import TYPE_CHECKING
@@ -26,7 +25,7 @@ if TYPE_CHECKING:
     from .pdf import PDF
 
 
-url: Final[str] = 'https://ais.swisscom.com/AIS-Server/rs/v1.0/sign'
+url = 'https://ais.swisscom.com/AIS-Server/rs/v1.0/sign'
 
 
 class AIS:
