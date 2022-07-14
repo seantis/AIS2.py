@@ -79,7 +79,7 @@ class AIS:
             return self.sign_one_pdf(pdfs[0])
 
         payload_documents = {
-            "DocumentHash": {
+            f"DocumentHash{index}": {
                 "@ID": index,
                 "dsig.DigestMethod": {
                     "@Algorithm":
