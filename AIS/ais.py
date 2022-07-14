@@ -9,7 +9,6 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 
 import base64
 import json
-import re
 import uuid
 
 import requests
@@ -26,8 +25,7 @@ if TYPE_CHECKING:
     from .pdf import PDF
 
 
-url = "https://ais.swisscom.com/AIS-Server/rs/v1.0/sign"
-_document_hash_fix = re.compile(r'"DocumentHash\d+"')
+url = 'https://ais.swisscom.com/AIS-Server/rs/v1.0/sign'
 
 
 class AIS:
@@ -81,39 +79,42 @@ class AIS:
             return self.sign_one_pdf(pdfs[0])
 
         payload_documents = {
-            f"DocumentHash{index}": {
-                "@ID": index,
-                "dsig.DigestMethod": {
-                    "@Algorithm":
-                    "http://www.w3.org/2001/04/xmlenc#sha256"
-                },
-                "dsig.DigestValue": pdf.digest()
-            }
-            for index, pdf in enumerate(pdfs)
+            'DocumentHash': [
+                {
+                    '@ID': index,
+                    'dsig.DigestMethod': {
+                        '@Algorithm': 'http://www.w3.org/2001/04/xmlenc#sha256'
+                    },
+                    'dsig.DigestValue': pdf.digest()
+                }
+                for index, pdf in enumerate(pdfs)
+            ]
         }
 
         payload = {
-            "SignRequest": {
-                "@RequestID": self._request_id(),
-                "@Profile": "http://ais.swisscom.ch/1.0",
-                "OptionalInputs": {
-                    "ClaimedIdentity": {
-                        "Name": ':'.join((self.customer, self.key_static)),
+            'SignRequest': {
+                '@RequestID': self._request_id(),
+                '@Profile': 'http://ais.swisscom.ch/1.1',
+                'OptionalInputs': {
+                    'AddTimestamp': {
+                        '@Type': 'urn:ietf:rfc:3161'
                     },
-                    "SignatureType": "urn:ietf:rfc:3369",
-                    "AdditionalProfile":
-                    "http://ais.swisscom.ch/1.0/profiles/batchprocessing",
-                    "AddTimestamp": {"@Type": "urn:ietf:rfc:3161"},
-                    "sc.AddRevocationInformation": {"@Type": "BOTH"},
+                    'AdditionalProfile': [
+                        'http://ais.swisscom.ch/1.0/profiles/batchprocessing'
+                    ],
+                    'ClaimedIdentity': {
+                        'Name': ':'.join((self.customer, self.key_static)),
+                    },
+                    'SignatureType': 'urn:ietf:rfc:3369',
+                    'sc.AddRevocationInformation': {
+                        '@Type': 'BOTH'
+                    },
                 },
-                "InputDocuments": payload_documents
+                'InputDocuments': payload_documents
             }
         }
 
         payload_json = json.dumps(payload, indent=4)
-        # FIXME: This is really dumb... Is this actually the proper way to do
-        #        it? will it not accept an array in DocumentHash instead?!
-        payload_json = _document_hash_fix.sub('"DocumentHash"', payload_json)
         sign_resp = self.post(payload_json)
 
         other = sign_resp['SignatureObject']['Other']['sc.SignatureObjects']
@@ -128,25 +129,30 @@ class AIS:
         """Sign the given pdf file."""
 
         payload = {
-            "SignRequest": {
-                "@RequestID": self._request_id(),
-                "@Profile": "http://ais.swisscom.ch/1.0",
-                "OptionalInputs": {
-                    "ClaimedIdentity": {
-                        "Name": ':'.join((self.customer, self.key_static)),
+            'SignRequest': {
+                '@RequestID': self._request_id(),
+                '@Profile': 'http://ais.swisscom.ch/1.1',
+                'OptionalInputs': {
+                    'AddTimestamp': {
+                        '@Type': 'urn:ietf:rfc:3161'
                     },
-                    "SignatureType": "urn:ietf:rfc:3369",
-                    "AddTimestamp": {"@Type": "urn:ietf:rfc:3161"},
-                    "sc.AddRevocationInformation": {"@Type": "BOTH"},
+                    'AdditionalProfile': [],
+                    'ClaimedIdentity': {
+                        'Name': ':'.join((self.customer, self.key_static)),
+                    },
+                    'SignatureType': 'urn:ietf:rfc:3369',
+                    'sc.AddRevocationInformation': {
+                        '@Type': 'BOTH'
+                    },
                 },
-                "InputDocuments": {
-                    "DocumentHash": {
-                        "dsig.DigestMethod": {
-                            "@Algorithm":
-                            "http://www.w3.org/2001/04/xmlenc#sha256"
+                'InputDocuments': {
+                    'DocumentHash': [{
+                        'dsig.DigestMethod': {
+                            '@Algorithm':
+                                'http://www.w3.org/2001/04/xmlenc#sha256'
                         },
-                        "dsig.DigestValue": pdf.digest()
-                    },
+                        'dsig.DigestValue': pdf.digest()
+                    }],
                 }
             }
         }
