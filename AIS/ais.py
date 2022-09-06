@@ -74,6 +74,10 @@ class AIS:
     def sign_batch(self, pdfs: Sequence['PDF']) -> None:
         """Sign a batch of files."""
 
+        # Let's just return if the batch is empty somehow
+        if not pdfs:
+            return
+
         # Let's not be pedantic and allow a batch of size 1
         if len(pdfs) == 1:
             return self.sign_one_pdf(pdfs[0])
