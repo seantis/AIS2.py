@@ -32,17 +32,6 @@ class TestAIS(BaseCase):
 
         # TODO check the signature
 
-    def test_sign_single_unprepared_pdf_as_batch(self):
-        self.assertIsNone(self.instance.last_request_id)
-
-        pdf = PDF(fixture_path('one.pdf'))
-        with my_vcr.use_cassette('sign_unprepared_pdf'):
-            self.instance.sign_batch([pdf])
-
-        self.assertIsNotNone(self.instance.last_request_id)
-
-        # TODO check the signature
-
     def test_sign_batch(self):
         self.assertIsNone(self.instance.last_request_id)
 
@@ -54,6 +43,27 @@ class TestAIS(BaseCase):
         self.assertIsNotNone(self.instance.last_request_id)
 
         # TODO check the signature
+
+    def test_sign_single_unprepared_pdf_as_batch(self):
+        self.assertIsNone(self.instance.last_request_id)
+
+        pdf = PDF(fixture_path('one.pdf'))
+        with my_vcr.use_cassette('sign_unprepared_pdf'):
+            self.instance.sign_batch([pdf])
+
+        self.assertIsNotNone(self.instance.last_request_id)
+
+        # TODO check the signature
+
+    def test_sign_empty_batch(self):
+        self.assertIsNone(self.instance.last_request_id)
+
+        # Allowing this is just for convenience, so we don't
+        # try to send an empty batch to the AIS API (it will
+        # not be happy with us if we do!)
+        self.instance.sign_batch([])
+
+        self.assertIsNone(self.instance.last_request_id)
 
     def test_wrong_customer_authentication_failed(self):
         bad_instance = AIS(customer="wrong_name", key_static="wrong_key",
