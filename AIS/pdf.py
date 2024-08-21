@@ -20,7 +20,7 @@ from .exceptions import SignatureTooLarge
 
 
 from typing import overload
-from typing import BinaryIO
+from typing import IO
 from typing import Optional
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -40,7 +40,7 @@ class PDF:
         self,
         input_file: 'FileLike',
         *,
-        out_stream: Optional[BinaryIO] = ...,
+        out_stream: Optional[IO[bytes]] = ...,
         sig_name: str = ...,
         sig_size: int = ...
     ): ...
@@ -49,7 +49,7 @@ class PDF:
     def __init__(
         self,
         *,
-        inout_stream: BinaryIO,
+        inout_stream: IO[bytes],
         sig_name: str = ...,
         sig_size: int = ...
     ): ...
@@ -58,8 +58,8 @@ class PDF:
         self,
         input_file: Optional['FileLike'] = None,
         *,
-        inout_stream: Optional[BinaryIO] = None,
-        out_stream: Optional[BinaryIO] = None,
+        inout_stream: Optional[IO[bytes]] = None,
+        out_stream: Optional[IO[bytes]] = None,
         sig_name: str = 'Signature',
         sig_size: int = 64*1024,  # 64 KiB
     ):
@@ -149,8 +149,9 @@ class PDF:
         """Signing I/O setup to be passed to pyHanko"""
 
     @property
-    def out_stream(self) -> BinaryIO:
+    def out_stream(self) -> IO[bytes]:
         """Output stream for the signed PDF."""
+        assert self.sig_io_setup.output is not None
         return self.sig_io_setup.output
 
     def digest(self) -> str:

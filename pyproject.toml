@@ -29,7 +29,7 @@ exclude_lines = [
 ]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.8"
 follow_imports = "silent"
 warn_redundant_casts = true
 warn_unreachable = true
@@ -46,19 +46,21 @@ ignore_missing_imports = true
 legacy_tox_ini = """
 [tox]
 isolated_build = True
-envlist = py37,py38,py39,py310,pypy,lint,bandit,mypy
+envlist = py38,py39,py310,py311,py312,py313,pypy,lint,bandit,mypy
 
 [gh-actions]
 python =
-    3.7: py37
     3.8: py38
     3.9: py39
-    3.10: py310,lint,bandit,mypy
+    3.10: py310
+    3.11: py311,lint,bandit,mypy
+    3.12: py312
+    3.13: py313
 
 [testenv]
 setenv =
-    py{37,38,39,310}: COVERAGE_FILE = .coverage.{envname}
-passenv = AIS_CUSTOMER AIS_KEY_STATIC AIS_CERT_FILE AIS_CERT_KEY AIS_SSL_CA
+    py{38,39,310,311,312,313}: COVERAGE_FILE = .coverage.{envname}
+passenv = AIS_CUSTOMER,AIS_KEY_STATIC,AIS_CERT_FILE,AIS_CERT_KEY,AIS_SSL_CA
 deps =
     pytest>=2.8.0
     vcrpy>=1.7.0
@@ -67,20 +69,20 @@ deps =
 commands = py.test --cov={envsitepackagesdir}/AIS --cov-report= {posargs}
 
 [testenv:lint]
-basepython = python3.10
+basepython = python3.11
 deps =
     flake8
 commands = flake8 AIS/ tests/
 
 [testenv:mypy]
-basepython = python3.10
+basepython = python3.11
 deps =
     mypy
     types-requests
 commands = mypy -p AIS
 
 [testenv:bandit]
-basepython = python3.10
+basepython = python3.11
 deps =
     bandit[toml]
 commands = bandit -c pyproject.toml -r AIS/
