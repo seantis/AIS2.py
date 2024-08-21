@@ -3,6 +3,9 @@
 Release History
 ---------------
 
+2.3.0 (2024-08-21)
+++++++++++++++++++
+
 - Add Python 3.11, 3.12, 3.13 support
 - Remove Python 3.7 support
 

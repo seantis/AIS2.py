@@ -64,7 +64,7 @@ class AIS:
         }
         cert = (self.cert_file, self.cert_key)
         response = requests.post(url, data=payload, headers=headers,
-                                 cert=cert)
+                                 cert=cert, timeout=(10, 5))
         sign_resp = response.json()['SignResponse']
         result = sign_resp['Result']
         if 'Error' in result['ResultMajor']:
