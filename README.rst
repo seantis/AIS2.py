@@ -36,7 +36,7 @@ AIS2.py works like this:
     >>> from AIS import AIS, PDF
     >>> client = AIS('alice', 'a_secret', 'a.crt', 'a.key')
     >>> pdf = PDF('source.pdf')
-    >>> ais.sign_one_pdf(pdf)
+    >>> client.sign_one_pdf(pdf)
     >>> with open('target.pdf', 'wb') as fp:
     ...     fp.write(pdf.out_stream.getvalue())
     ...
