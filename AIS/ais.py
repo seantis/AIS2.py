@@ -6,6 +6,7 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 :license: AGPLv3, see README and LICENSE for more details
 
 """
+from __future__ import annotations
 
 import base64
 import json
@@ -13,15 +14,13 @@ import uuid
 
 import requests
 
-from . import exceptions
+from AIS import exceptions
 
 
 from typing import Any
-from typing import Dict
-from typing import Optional
-from typing import Sequence
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    from collections.abc import Sequence
     from .pdf import PDF
 
 
@@ -31,7 +30,7 @@ url = 'https://ais.swisscom.com/AIS-Server/rs/v1.0/sign'
 class AIS:
     """Client object holding connection information to the AIS service."""
 
-    last_request_id: Optional[str]
+    last_request_id: str | None
     """Contains the id of the last request made to the AIS API."""
 
     def __init__(
@@ -40,7 +39,7 @@ class AIS:
         key_static: str,
         cert_file: str,
         cert_key: str
-    ):
+    ) -> None:
         """Initialize an AIS client with authentication information."""
         self.customer = customer
         self.key_static = key_static
@@ -53,7 +52,7 @@ class AIS:
         self.last_request_id = uuid.uuid4().hex
         return self.last_request_id
 
-    def post(self, payload: str) -> Dict[str, Any]:
+    def post(self, payload: str) -> dict[str, Any]:
         """ Do the post request for this payload and return the signature part
         of the json response.
         """
@@ -69,9 +68,9 @@ class AIS:
         result = sign_resp['Result']
         if 'Error' in result['ResultMajor']:
             raise exceptions.error_for(response)
-        return sign_resp
+        return sign_resp  # type: ignore[no-any-return]
 
-    def sign_batch(self, pdfs: Sequence['PDF']) -> None:
+    def sign_batch(self, pdfs: Sequence[PDF]) -> None:
         """Sign a batch of files."""
 
         # Let's just return if the batch is empty somehow
@@ -107,7 +106,7 @@ class AIS:
                         'http://ais.swisscom.ch/1.0/profiles/batchprocessing'
                     ],
                     'ClaimedIdentity': {
-                        'Name': ':'.join((self.customer, self.key_static)),
+                        'Name': f'{self.customer}:{self.key_static}',
                     },
                     'SignatureType': 'urn:ietf:rfc:3369',
                     'sc.AddRevocationInformation': {
@@ -129,7 +128,7 @@ class AIS:
             which_document = int(signature_object['@WhichDocument'])
             pdfs[which_document].write_signature(signature)
 
-    def sign_one_pdf(self, pdf: 'PDF') -> None:
+    def sign_one_pdf(self, pdf: PDF) -> None:
         """Sign the given pdf file."""
 
         payload = {
@@ -142,7 +141,7 @@ class AIS:
                     },
                     'AdditionalProfile': [],
                     'ClaimedIdentity': {
-                        'Name': ':'.join((self.customer, self.key_static)),
+                        'Name': f'{self.customer}:{self.key_static}',
                     },
                     'SignatureType': 'urn:ietf:rfc:3369',
                     'sc.AddRevocationInformation': {

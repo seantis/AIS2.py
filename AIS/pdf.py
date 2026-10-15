@@ -6,6 +6,7 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 :license: AGPLv3, see README and LICENSE for more details
 
 """
+from __future__ import annotations
 
 import base64
 from datetime import datetime
@@ -21,14 +22,13 @@ from .exceptions import SignatureTooLarge
 
 from typing import overload
 from typing import IO
-from typing import Optional
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .types import FileLike
     from .types import SupportsBinaryRead
 
 
-def is_seekable(fp: 'SupportsBinaryRead') -> bool:
+def is_seekable(fp: SupportsBinaryRead) -> bool:
     return getattr(fp, 'seekable', lambda: False)()
 
 
@@ -38,9 +38,9 @@ class PDF:
     @overload
     def __init__(
         self,
-        input_file: 'FileLike',
+        input_file: FileLike,
         *,
-        out_stream: Optional[IO[bytes]] = ...,
+        out_stream: IO[bytes] | None = ...,
         sig_name: str = ...,
         sig_size: int = ...
     ): ...
@@ -56,10 +56,10 @@ class PDF:
 
     def __init__(
         self,
-        input_file: Optional['FileLike'] = None,
+        input_file: FileLike | None = None,
         *,
-        inout_stream: Optional[IO[bytes]] = None,
-        out_stream: Optional[IO[bytes]] = None,
+        inout_stream: IO[bytes] | None = None,
+        out_stream: IO[bytes] | None = None,
         sig_name: str = 'Signature',
         sig_size: int = 64*1024,  # 64 KiB
     ):
@@ -87,7 +87,7 @@ class PDF:
         """
 
         in_place = out_stream is None
-        writer_stream: 'SupportsBinaryRead'
+        writer_stream: SupportsBinaryRead
 
         if isinstance(inout_stream, io.BytesIO):
             # in this case we create the signed version in-place

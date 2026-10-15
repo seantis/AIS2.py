@@ -6,75 +6,79 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 :license: AGPLv3, see README and LICENSE for more details
 
 """
+from __future__ import annotations
+
+import pytest
+
 from os import environ
 
-from common import my_vcr, fixture_path, BaseCase
-
 from AIS import AIS, AuthenticationFailed, PDF
+
+from tests.common import my_vcr, fixture_path, BaseCase
 
 
 class TestAIS(BaseCase):
 
-    def test_constructor_builds_instance(self):
+    def test_constructor_builds_instance(self) -> None:
         alice_instance = AIS(customer='alice', key_static='alice_secret',
                              cert_file='alice.crt', cert_key='alice.key')
-        self.assertEqual('alice', alice_instance.customer)
-        self.assertEqual('alice_secret', alice_instance.key_static)
+        assert 'alice' == alice_instance.customer
+        assert 'alice_secret' == alice_instance.key_static
 
-    def test_sign_single_unprepared_pdf(self):
-        self.assertIsNone(self.instance.last_request_id)
+    def test_sign_single_unprepared_pdf(self) -> None:
+        assert self.instance.last_request_id is None
 
         pdf = PDF(fixture_path('one.pdf'))
         with my_vcr.use_cassette('sign_unprepared_pdf'):
             self.instance.sign_one_pdf(pdf)
 
-        self.assertIsNotNone(self.instance.last_request_id)
+        assert self.instance.last_request_id is not None
 
         # TODO check the signature
 
-    def test_sign_batch(self):
-        self.assertIsNone(self.instance.last_request_id)
+    def test_sign_batch(self) -> None:
+        assert self.instance.last_request_id is None
 
         pdfs = [PDF(fixture_path(filename))
                 for filename in ["one.pdf", "two.pdf", "three.pdf"]]
         with my_vcr.use_cassette('sign_batch'):
             self.instance.sign_batch(pdfs)
 
-        self.assertIsNotNone(self.instance.last_request_id)
+        assert self.instance.last_request_id is not None
 
         # TODO check the signature
 
-    def test_sign_single_unprepared_pdf_as_batch(self):
-        self.assertIsNone(self.instance.last_request_id)
+    def test_sign_single_unprepared_pdf_as_batch(self) -> None:
+        assert self.instance.last_request_id is None
 
         pdf = PDF(fixture_path('one.pdf'))
         with my_vcr.use_cassette('sign_unprepared_pdf'):
             self.instance.sign_batch([pdf])
 
-        self.assertIsNotNone(self.instance.last_request_id)
+        assert self.instance.last_request_id is not None
 
         # TODO check the signature
 
-    def test_sign_empty_batch(self):
-        self.assertIsNone(self.instance.last_request_id)
+    def test_sign_empty_batch(self) -> None:
+        assert self.instance.last_request_id is None
 
         # Allowing this is just for convenience, so we don't
         # try to send an empty batch to the AIS API (it will
         # not be happy with us if we do!)
         self.instance.sign_batch([])
 
-        self.assertIsNone(self.instance.last_request_id)
+        assert self.instance.last_request_id is None
 
-    def test_wrong_customer_authentication_failed(self):
+    def test_wrong_customer_authentication_failed(self) -> None:
         bad_instance = AIS(customer="wrong_name", key_static="wrong_key",
                            cert_file=self.cert_file,
                            cert_key=self.cert_key)
 
-        with self.assertRaises(AuthenticationFailed):
+        with pytest.raises(AuthenticationFailed):
             with my_vcr.use_cassette('wrong_customer'):
                 bad_instance.sign_one_pdf(PDF(fixture_path('one.pdf')))
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Setup an AIS instance to be used in the tests.
 
         If you have real credentials to AIS and wish to use them to run tests,

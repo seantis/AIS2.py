@@ -6,6 +6,7 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 :license: AGPLv3, see README and LICENSE for more details
 
 """
+from __future__ import annotations
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -15,8 +16,6 @@ if TYPE_CHECKING:
 class AISError(Exception):
     """Generic AIS Error."""
 
-    pass
-
 
 class AuthenticationFailed(AISError):
     """Authentication with AIS failed.
@@ -24,8 +23,6 @@ class AuthenticationFailed(AISError):
     This means that AIS returned
     http://ais.swisscom.ch/1.0/resultminor/AuthenticationFailed
     """
-
-    pass
 
 
 class SignatureTooLarge(AISError):
@@ -43,8 +40,6 @@ class SignatureTooLarge(AISError):
 class UnknownAISError(AISError):
     """Unknown AIS Error."""
 
-    pass
-
 
 minor_to_exception = {
     'http://ais.swisscom.ch/1.0/resultminor/AuthenticationFailed':
@@ -52,9 +47,11 @@ minor_to_exception = {
 }
 
 
-def error_for(response: 'Response') -> Exception:
+def error_for(response: Response) -> Exception:
     """Return the correct error for a response."""
     result = response.json()['SignResponse']['Result']
 
-    Exc = minor_to_exception.get(result['ResultMinor'], UnknownAISError)
-    return Exc(result)
+    return minor_to_exception.get(
+        result['ResultMinor'],
+        UnknownAISError
+    )(result)

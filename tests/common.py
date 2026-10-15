@@ -6,23 +6,33 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 :license: AGPLv3, see README and LICENSE for more details
 
 """
+from __future__ import annotations
+
 import json
-from os.path import dirname, join
 import unittest
+
+from os.path import dirname, join
 
 from pyhanko.pdf_utils.reader import PdfFileReader
 from pyhanko.sign.validation import validate_pdf_signature
+from vcr import VCR  # type: ignore
+from vcr.serializers import jsonserializer  # type: ignore
 
-from vcr import VCR
-from vcr.serializers import jsonserializer
+
+from typing import Any
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from pyhanko.sign.validation import PdfSignatureStatus
+
+    from AIS import PDF
 
 
-class JSONSerializer(object):
+class JSONSerializer:
     """ Override default json serializer to fix PY3 vcr encoding mistake.
     """
 
     @staticmethod
-    def fix_value_encoding(value):
+    def fix_value_encoding(value: object) -> object:
         if isinstance(value, dict):
             return JSONSerializer.fix_dict_encoding(value)
         elif isinstance(value, list):
@@ -33,7 +43,7 @@ class JSONSerializer(object):
             return value
 
     @staticmethod
-    def fix_dict_encoding(dict_to_fix):
+    def fix_dict_encoding(dict_to_fix: dict[str, Any]) -> dict[str, Any]:
         """ Return a copy of *dict_to_fix* with bytes transform to str.
 
         :type dict_to_fix: dict
@@ -45,16 +55,16 @@ class JSONSerializer(object):
         }
 
     @staticmethod
-    def serialize(cassette_dict):
+    def serialize(cassette_dict: dict[str, Any]) -> str:
         cassette_dict = JSONSerializer.fix_dict_encoding(cassette_dict)
-        return jsonserializer.serialize(cassette_dict)
+        return jsonserializer.serialize(cassette_dict)  # type: ignore[no-any-return]
 
     @staticmethod
-    def deserialize(cassette_string):
+    def deserialize(cassette_string: str) -> Any:
         return jsonserializer.deserialize(cassette_string)
 
 
-def before_record_callback(request):
+def before_record_callback(request: Any) -> Any:
     """Replace confidential information in the recorded cassettes.
 
     - customer:key are replaced with 'X:Y'
@@ -78,12 +88,12 @@ my_vcr = VCR(
 my_vcr.register_serializer('json', JSONSerializer)
 
 
-def fixture_path(filename):
+def fixture_path(filename: str) -> str:
     """Build the full path of a fixture file."""
     return join(dirname(__file__), 'fixtures', filename)
 
 
-def validate_signature(pdf):
+def validate_signature(pdf: PDF) -> PdfSignatureStatus:
     """Validate the pdf's signature"""
     # TODO: Add a ValidationContext to validate chain-of-trust?
     reader = PdfFileReader(pdf.out_stream)

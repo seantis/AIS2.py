@@ -6,13 +6,14 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 :license: AGPLv3, see README and LICENSE for more details
 
 """
+from __future__ import annotations
 
 from typing import Protocol
-from typing import Union
+from typing import TypeAlias
 
 
 class SupportsBinaryRead(Protocol):
-    def read(self, __size: int = -1) -> bytes: ...
+    def read(self, size: int = -1, /) -> bytes: ...
 
 
-FileLike = Union[str, SupportsBinaryRead]
+FileLike: TypeAlias = str | SupportsBinaryRead

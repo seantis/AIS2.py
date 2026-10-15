@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: mixed-line-ending
@@ -12,22 +12,30 @@ repos:
     hooks:
       - id: rst-linter
         files: '^[A-Z]+\.rst$'
-        additional_dependencies:
-          - types_requests
   - repo: https://github.com/seantis/pre-commit-hooks
     rev: v1.1.0
     hooks:
       - id: nocheckin
         exclude: .pre-commit-config.yaml
   - repo: https://github.com/PyCQA/flake8
-    rev: 7.1.1
+    rev: "7.4.1"
     hooks:
       - id: flake8
         files: '^(AIS/.*|tests/.*|setup)\.py$'
+        additional_dependencies:
+          - flake8_type_checking
+          - flake8_pyproject
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.1
+    rev: v2.4.0
     hooks:
       - id: mypy
         files: '^AIS/.*\.py$'
         additional_dependencies:
+          - pyhanko
+          - pytest
           - types_requests
+          - vcrpy
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: v1.31.0
+    hooks:
+      - id: zizmor

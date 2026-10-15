@@ -2,6 +2,67 @@
 requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "AIS2.py"
+dynamic = ["version", "readme"]
+description = "Python interface for the Swisscom All-in Signing Service"
+requires-python = ">=3.11"
+authors = [
+    { name = "Camptocamp", email = "info@camptocamp.com" },
+]
+maintainers = [
+    { name = "Seantis AG", email = "info@seantis.ch" },
+]
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = ["requests >= 2.0", "pyHanko >= 0.9"]
+
+[dependency-groups]
+dev = [
+    "bump-my-version",
+    "flake8",
+    "flake8-type-checking",
+    "flake8-pyproject",
+    "mypy",
+    "prek",
+    "pytest",
+    "ruff",
+    "tox",
+    "tox-uv",
+    "types-requests",
+    "uv",
+    "vcrpy >= 1.7.0"
+]
+
+[project.urls]
+Repository = "https://pypi.python.org/pypi/AIS2.py"
+"Bug Tracker" = "https://pypi.python.org/pypi/AIS2.py/issues"
+Changelog = "https://pypi.python.org/pypi/AIS2.py/blob/main/HISTORY.rst"
+
+[tool.setuptools.package-data]
+AIS = [
+    "README.rst",
+    "LICENSE",
+    "HISTORY.rst",
+    "py.typed",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "AIS.__version__"}
+readme = {file = ["README.rst", "HISTORY.rst"]}
+
 [tool.bandit]
 skips = ["B101"]
 
@@ -28,77 +89,292 @@ exclude_lines = [
     "raise NotImplementedError"
 ]
 
+[tool.bumpversion]
+current_version = "2.3.0"
+commit = true
+message = "Release {new_version}"
+tag = true
+tag_message = "Release {new_version}"
+
+[[tool.bumpversion.files]]
+filename = "src/sedate/__init__.py"
+search= "__version__ = '{current_version}'"
+replace= "__version__ = '{new_version}'"
+
+[[tool.bumpversion.files]]
+filename = "HISTORY.rst"
+search = """
+---------
+"""
+replace = """
+---------
+
+{new_version} ({now:%d.%m.%Y})
+++++++++++++++++++
+"""
+
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.11"
 follow_imports = "silent"
+strict = true
 warn_redundant_casts = true
 warn_unreachable = true
 warn_unused_ignores = true
-disallow_any_generics = true
-disallow_untyped_defs = true
 mypy_path = "$MYPY_CONFIG_FILE_DIR"
 
-[[tool.mypy.overrides]]
-module = ["pyhanko.*"]
-ignore_missing_imports = true
+[tool.flake8]
+select = ["TC0", "TC1"]
+
+[tool.ruff]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+src = ["src", "tests"]
+include = [
+    "pyproject.toml",
+    "AIS/**/*.py",
+    "tests/**/*.py",
+]
+line-length = 79
+indent-width = 4
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "B0",
+    "C4",
+    "D2",
+    "D4",
+    "E",
+    "F",
+    "ISC",
+    "N",
+    "PERF",
+    "PIE",
+    "PT",
+    "PYI",
+    "Q",
+    "RUF",
+    "SIM",
+    "SLOT",
+    "UP",
+    "W",
+    "blanket-noqa",
+    "escape-sequence-in-docstring",
+    "loop-iterator-mutation",
+    "missing-required-import",
+    "raise-without-from-inside-except",
+    "static-join-to-f-string",
+    "trailing-comma-on-bare-tuple",
+]
+ignore = [
+    "ambiguous-variable-name",
+    "blank-line-after-function",
+    "blank-line-before-class",
+    "blank-line-before-function",
+    "blank-lines-between-header-and-content",
+    "custom-type-var-for-self",
+    "dict-get-with-none-default",
+    "error-suffix-on-exception-name",
+    "f-string",
+    "falsy-dict-get-fallback",
+    "if-else-block-instead-of-if-exp",
+    "if-expr-with-true-false",
+    "implicit-optional",
+    "in-dict-keys",
+    "incorrect-blank-line-after-class",
+    "incorrectly-parenthesized-tuple-in-subscript",
+    "invalid-module-name",
+    "missing-blank-line-after-summary",
+    "missing-trailing-period",
+    "missing-whitespace-around-arithmetic-operator",
+    "module-import-not-at-top-of-file",
+    "mutable-class-default",
+    "needless-bool",
+    "new-line-after-last-paragraph",
+    "non-empty-init-module",
+    "non-imperative-mood",
+    "none-comparison",
+    "parenthesize-chained-operators",
+    "reimplemented-builtin",
+    "redundant-numeric-union",
+    "suppressible-exception",
+    "surrounding-whitespace",
+    "true-false-comparison",
+    "unnecessary-dict-comprehension-for-iterable",
+    "unnecessary-encode-utf8",
+    "unnecessary-multiline-docstring",
+    "unsorted-dunder-all",
+    "unsorted-dunder-slots",
+    "unused-loop-control-variable",
+    "used-dummy-variable",
+    "utf8-encoding-declaration",
+]
+unfixable = []
+external = ["TC"]
+allowed-confusables = ["×"]
+preview = true
+
+[tool.ruff.lint.extend-per-file-ignores]
+"AIS/**/*.py" = ["PT"]
+"tests/**/*.py" = [
+    "C4",
+    "D",
+    "ISC",
+    "N",
+    "Q",
+    "PERF",
+    "PGH",
+    "PIE",
+    "PYI",
+    "RUF",
+    "SIM",
+    "UP",
+    "static-join-to-f-string",
+]
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+ignore-decorators = ["typing.overload"]
+
+[tool.ruff.lint.flake8-quotes]
+avoid-escape = true
+docstring-quotes = "double"
+inline-quotes = "single"
+multiline-quotes = "double"
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "lf"
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
 
 [tool.tox]
-legacy_tox_ini = """
-[tox]
-isolated_build = True
-envlist = py38,py39,py310,py311,py312,py313,pypy,lint,bandit,mypy
+isolated_build = true
+env_list = [
+    "py311",
+    "py312",
+    "py313",
+    "py314",
+    "py315",
+    "pypy",
+    "lint",
+    "bandit",
+    "mypy",
+    "docs",
+    "report",
+]
 
-[gh-actions]
-python =
-    3.8: py38
-    3.9: py39
-    3.10: py310
-    3.11: py311,lint,bandit,mypy
-    3.12: py312
-    3.13: py313
+[tool.tox.gh.python]
+"3.11" = ["py311"]
+"3.12" = ["py312", "lint", "bandit", "mypy"]
+"3.13" = ["py313"]
+"3.14" = ["py314"]
+"3.15" = ["py315"]
 
-[testenv]
-setenv =
-    py{38,39,310,311,312,313}: COVERAGE_FILE = .coverage.{envname}
-passenv = AIS_CUSTOMER,AIS_KEY_STATIC,AIS_CERT_FILE,AIS_CERT_KEY,AIS_SSL_CA
-deps =
-    pytest>=2.8.0
-    vcrpy>=1.7.0
-    pytest-cov
-    pytest-codecov[git]
-commands = py.test --cov={envsitepackagesdir}/AIS --cov-report= {posargs}
+[tool.tox.env_run_base]
+use_develop = true
+set_env.COVERAGE_FILE = { replace = "if", condition = "not factor.report", then = ".coverage.{env_name}"}
+pass_env = [
+    "AIS_CUSTOMER",
+    "AIS_KEY_STATIC",
+    "AIS_CERT_FILE",
+    "AIS_CERT_KEY",
+    "AIS_SSL_CA"
+]
+deps = [
+    "coverage[toml]",
+    "pytest",
+    "pytest-cov",
+    "pytest-codecov[git]",
+    "vcrpy>=1.7.0",
+]
+commands = [
+    [
+        "pytest",
+        "--cov",
+        "--cov-report=",
+        { replace = "posargs", extend = true }
+    ],
+]
 
-[testenv:lint]
-basepython = python3.11
-deps =
-    flake8
-commands = flake8 AIS/ tests/
+[tool.tox.env.lint]
+base_python = "python3.12"
+deps = [
+    "flake8",
+    "flake8-pyproject",
+    "flake8-type-checking",
+    "ruff",
+]
+commands = [
+    ["ruff", "check"],
+    ["flake8", "AIS/", "tests/"]
+]
 
-[testenv:mypy]
-basepython = python3.11
-deps =
-    mypy
-    types-requests
-commands = mypy -p AIS
+[tool.tox.env.mypy]
+base_python = "python3.12"
+deps = [
+    "mypy",
+    "pytest",
+    "types-requests",
+    "vcrpy>=1.7.0",
+]
+commands = [
+    ["mypy", "-p", "AIS", "-p", "tests", "--python-version", "3.11"],
+    ["mypy", "-p", "AIS", "-p", "tests", "--python-version", "3.12"],
+    ["mypy", "-p", "AIS", "-p", "tests", "--python-version", "3.13"],
+    ["mypy", "-p", "AIS", "-p", "tests", "--python-version", "3.14"],
+    ["mypy", "-p", "AIS", "-p", "tests", "--python-version", "3.15"],
+]
 
-[testenv:bandit]
-basepython = python3.11
-deps =
-    bandit[toml]
-commands = bandit -c pyproject.toml -r AIS/
+[tool.tox.env.bandit]
+base_python = "python3.12"
+deps = ["bandit[toml]"]
+commands = [["bandit", "-q", "-c", "pyproject.toml", "-r", "AIS"]]
 
-[testenv:docs]
-deps =
-    sphinx>=1.4.0
-    .
-commands =
-    sphinx-build -E -W -c docs -b html docs/ docs/_build/html
-
-[testenv:report]
-deps =
-    coverage[toml]
+[tool.tox.env.docs]
+base_python = "python3.12"
 skip_install = true
-commands =
-    coverage combine
-    coverage report -m
-"""
+deps = ["sphinx>=1.4.0"]
+commands = [
+    ["sphinx-build", "-E", "-W", "-c", "docs", "-b", "html", "docs/", "docs/_build/html"],
+]
+
+[tool.tox.env.report]
+base_python = "python3.12"
+skip_install = true
+deps = ["coverage"]
+commands = [
+    ["coverage", "combine"],
+    ["coverage", "report", "-m"],
+]
